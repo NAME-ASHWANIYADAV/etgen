@@ -1,6 +1,6 @@
 import { Holding, MarketData, Signal, StockAnalysis, ChatMessage } from '../types';
 
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "https://etgenbackend.onrender.com/api";
 
 // ─── API Functions — all data from real backend ───
 
