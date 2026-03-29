@@ -6,14 +6,7 @@ import { sendChatMessage } from '../services/api';
 import { ChatMessage } from '../types';
 
 export default function Chat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: 'ai',
-      content: "Based on my multi-agent analysis of HDFC Bank (NSE: HDFCBANK), here's my assessment:\n\nOverall Signal: **BUY with High Conviction (92/100)**\n\n📊 **Technical Setup**: The stock is showing a bullish RSI divergence at 34, suggesting oversold conditions. Price is near the lower Bollinger Band with MACD showing a bullish crossover.\n\n📑 **Fundamentals**: Q3 FY26 results beat street estimates by 12%. Net profit grew 18% YoY to ₹16,800 Cr. NIM remained stable at 3.4%.\n\n🔍 **Insider Activity**: ₹340 Cr block deal detected on Mar 27 — institutional accumulation. Promoter holding stable at 25.8% with zero pledge.\n\n📰 **Market Sentiment**: 9 out of 12 recent ET Markets articles carry a positive tone. Key narrative: 'digital banking leader.'\n\n⚡ **Signal Fusion**: 4/4 agents bullish. Historical backtest of similar patterns shows 72% probability of 12-18% upside in 30 days.\n\nThis is AI-generated analysis for informational purposes. Not investment advice.\n\nSources:\n[1] ET Markets, March 28, 2026\n[2] BSE Filing - HDFC Bank Q3 Results\n[3] NSE Bulk Deal Data, March 27, 2026",
-      agents: ['📊 Technical', '📑 Filing', '🔍 Insider', '📰 Sentiment'],
-      sources: ['ET Markets, Mar 28', 'BSE Filing, Mar 27']
-    }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);

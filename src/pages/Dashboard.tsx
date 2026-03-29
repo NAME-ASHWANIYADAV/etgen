@@ -4,31 +4,38 @@ import { Signal, MarketData } from '../types';
 import { MarketOverview } from '../components/MarketOverview';
 import { SignalCard } from '../components/SignalCard';
 import { motion } from 'motion/react';
-import { Sparkles, TrendingUp } from 'lucide-react';
+import { Sparkles, TrendingUp, Loader2 } from 'lucide-react';
 
 export default function Dashboard() {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [marketData, setMarketData] = useState<MarketData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingSignals, setLoadingSignals] = useState(true);
+  const [loadingMarket, setLoadingMarket] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const [s, m] = await Promise.all([getSignals(), getMarketOverview()]);
-      setSignals(s);
-      setMarketData(m);
-      setLoading(false);
-    };
-    fetchData();
+    // Fetch independently so one doesn't block the other
+    getMarketOverview()
+      .then(m => setMarketData(m))
+      .catch(e => console.error("Market overview error:", e))
+      .finally(() => setLoadingMarket(false));
+
+    getSignals()
+      .then(s => setSignals(s))
+      .catch(e => console.error("Signals error:", e))
+      .finally(() => setLoadingSignals(false));
   }, []);
+
+  const loading = loadingSignals && loadingMarket;
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[80vh]">
+      <div className="flex flex-col items-center justify-center h-[80vh] gap-4">
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full shadow-[0_0_15px_rgba(0,240,255,0.5)]"
         />
+        <p className="text-text-secondary text-sm animate-pulse">AI agents scanning NSE stocks...</p>
       </div>
     );
   }
@@ -80,9 +87,25 @@ export default function Dashboard() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {signals.map((signal, i) => (
-            <SignalCard key={signal.symbol} signal={signal} index={i} />
-          ))}
+          {loadingSignals ? (
+            <div className="col-span-full flex flex-col items-center justify-center py-16 gap-4">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full"
+              />
+              <p className="text-text-secondary text-sm animate-pulse">AI agents scanning 6 NSE stocks... (~15 sec)</p>
+            </div>
+          ) : signals.length === 0 ? (
+            <div className="col-span-full text-center py-12 text-text-secondary">
+              <p className="text-lg font-bold mb-2">No signals yet</p>
+              <p className="text-sm">Backend is processing. Try refreshing in a few seconds.</p>
+            </div>
+          ) : (
+            signals.map((signal, i) => (
+              <SignalCard key={signal.symbol} signal={signal} index={i} />
+            ))
+          )}
         </div>
       </section>
 
